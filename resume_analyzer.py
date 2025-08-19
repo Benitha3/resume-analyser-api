@@ -9,19 +9,27 @@ SKILLS = [
     "Communication", "Leadership", "Teamwork", "Problem Solving"
 ]
 
-def download_resume(resume_url, filename="resume.pdf"):
-    """Download resume from Google Drive or URL."""
+def download_resume(resume_url):
     try:
+        # Handle Google Drive link
         if "drive.google.com" in resume_url:
-            # Convert share link to download link
-            file_id = resume_url.split("/d/")[1].split("/")[0]
+            if "id=" in resume_url:
+                file_id = resume_url.split("id=")[1]
+            elif "/d/" in resume_url:
+                file_id = resume_url.split("/d/")[1].split("/")[0]
+            else:
+                return None
+
             resume_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-        response = requests.get(resume_url)
-        with open(filename, "wb") as f:
-            f.write(response.content)
-        return filename
+
+        response = requests.get(resume_url, stream=True)
+        if response.status_code == 200:
+            with open("resume.pdf", "wb") as f:
+                f.write(response.content)
+            return "resume.pdf"
+        return None
     except Exception as e:
-        print("❌ Error downloading resume:", e)
+        print(f"❌ Error downloading resume: {e}")
         return None
 
 def extract_text_from_pdf(file_path):
