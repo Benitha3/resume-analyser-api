@@ -1,3 +1,7 @@
 Flask
-requests
-PyMuPDF
+gunicorn
+pdfplumber
+pandas
+openpyxl
+PyPDF2
+nltk
